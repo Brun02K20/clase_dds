@@ -32,12 +32,12 @@ router.get("/obtenerById/:id", async (req, res) => {
     }
 })
 
-router.post("/crearUsuario", async (req, res) => {
+router.post("/crearUsuario", async (req, res, next) => {
     try {
         const usuario = await usersServices.createUser(req.body)
         res.json(usuario)
     } catch (error) {
-        res.status(500).json({ error: "Oops, algo malio sal" })
+        next(error)
     }
 })
 
@@ -52,13 +52,14 @@ router.get("/byFilters", async (req, res) => {
 })
 
 // QUERY PARAM
-router.delete("/usuarioABorrar", async (req, res) => {
+router.delete("/usuarioABorrar", async (req, res, next) => {
     const { id } = req.query
     try {
         const response = await usersServices.deleteUser(id)
         return res.json(response)
     } catch (error) {
-        return res.status(500).json({ error: error.message })
+        console.log(error);
+        next(error)
     }
 })
 
@@ -72,7 +73,15 @@ router.put("/modificar", async (req, res) => {
     }
 })
 
-
+router.get("/ejercicio", async (req, res) => {
+    const { apellido } = req.query
+    try {
+        const response = await usersServices.ejercicio(apellido)
+        return res.json(response)
+    } catch (error) {
+        return res.status(500).json({ error: error.message })
+    }
+})
 
 const usuariosRouter = {
     router

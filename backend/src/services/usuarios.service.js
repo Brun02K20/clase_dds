@@ -1,5 +1,7 @@
 import { Op } from "sequelize";
 import sequelize from "../databases/databases.js";
+import { ResourceNotFound } from "../errors/resource-not-found-error.js";
+import { ModificationError } from "../errors/modification-error.js";
 
 // obtener todos los usuarios
 const getAll = async () => {
@@ -15,6 +17,17 @@ const getById = async (id) => {
 
 // crear un nuevo usuario
 const createUser = async (body) => {
+    // si no viene un cuerpo en la soliciud tiro un error
+    if (!body) {
+        throw new ModificationError("Error, falta algun dato")
+    }
+
+    // si no viene algun atribuo en la solicitud, tiro un error
+    if (!body.nombre || !body.apellido || !body.usuario || !body.password || !body.email) {
+        throw new ModificationError("Error, falta algun dato")
+    }
+
+    // si ta todo OK, creo el usuario
     const usuarioACrear = await sequelize.models.Usuarios.create({
         nombre: body.nombre,
         apellido: body.apellido,
@@ -49,7 +62,7 @@ const updateUser = async (idUsuario, body) => {
 const deleteUser = async (idUsuario) => {
     const userToDelete = await sequelize.models.Usuarios.findByPk(idUsuario) // busco usuario
     if (!userToDelete) { // si no existe tiro error
-        throw new Error("Error, no existe ese usuario")
+        throw new ResourceNotFound("Error, no existe ese usuario")
     }
 
     await userToDelete.destroy() // si existe lo borro
@@ -87,13 +100,46 @@ const getByFilters = async (nombre, apellido) => {
     return usersFiltrados.map(user => user.dataValues)
 }
 
+// busque por apellido. LISTO
+// que los ordene por nombre en forma alfabetica. LISTO
+// que solo devuelva los primeros 2 registros
+// no incluya el atributo password en la devolucion
+const ejercicio = async (apellido) => {
+    if (!apellido) { // si no viene ningun filtro en el parametro, que retorne todos los usuarios
+        return await getAll()
+    }
+
+    const whereConditions = {};
+
+    if (apellido) {
+        whereConditions.apellido = { [Op.like]: `%${apellido}%` };
+    }
+
+    const usuariosFiltrados = await sequelize.models.Usuarios.findAll({
+        where: whereConditions,
+        order: [["nombre", "ASC"]], // ordenar por uno o mas atributos
+        limit: 2, // solo los primeros 2 registros
+        attributes: {
+            exclude: ["password"]
+        }
+    })
+
+    if (usuariosFiltrados.length === 0) {
+        throw new Error("No hay usuarios que cumplan con los filtros")
+    }
+
+    return usuariosFiltrados.map(usuario => usuario.dataValues)
+}
+
+
 const usersServices = {
     getAll,
     getById,
     createUser,
     updateUser,
     deleteUser,
-    getByFilters
+    getByFilters,
+    ejercicio
 }
 
 export { usersServices }
