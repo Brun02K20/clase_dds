@@ -1,7 +1,5 @@
 import { Op } from "sequelize";
 import sequelize from "../databases/databases.js";
-import { ResourceNotFound } from "../errors/resource-not-found-error.js";
-import { ModificationError } from "../errors/modification-error.js";
 
 // obtener todos los usuarios
 const getAll = async () => {
@@ -19,12 +17,12 @@ const getById = async (id) => {
 const createUser = async (body) => {
     // si no viene un cuerpo en la soliciud tiro un error
     if (!body) {
-        throw new ModificationError("Error, falta algun dato")
+        throw new Error("Error, falta algun dato")
     }
 
     // si no viene algun atribuo en la solicitud, tiro un error
     if (!body.nombre || !body.apellido || !body.usuario || !body.password || !body.email) {
-        throw new ModificationError("Error, falta algun dato")
+        throw new Error("Error, falta algun dato")
     }
 
     // si ta todo OK, creo el usuario
@@ -46,6 +44,11 @@ const updateUser = async (idUsuario, body) => {
         throw new Error("Error, no existe ese usuario")
     }
 
+    // si no viene algun atribuo en la solicitud, tiro un error
+    if (!body.nombre || !body.apellido || !body.usuario || !body.password || !body.email) {
+        throw new Error("Error, falta algun dato")
+    }
+
     // si existe seteo sus datos como lo que me dio el body
     userToUpdate.nombre = body.nombre
     userToUpdate.apellido = body.apellido
@@ -62,7 +65,7 @@ const updateUser = async (idUsuario, body) => {
 const deleteUser = async (idUsuario) => {
     const userToDelete = await sequelize.models.Usuarios.findByPk(idUsuario) // busco usuario
     if (!userToDelete) { // si no existe tiro error
-        throw new ResourceNotFound("Error, no existe ese usuario")
+        throw new Error("Error, no existe ese usuario")
     }
 
     await userToDelete.destroy() // si existe lo borro

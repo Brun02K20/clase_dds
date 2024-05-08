@@ -1,3 +1,4 @@
+// en estos archivitos hago los modelos de las tablas de la base de datos
 import { DataTypes } from "sequelize"
 
 const tareasAttributes = {
