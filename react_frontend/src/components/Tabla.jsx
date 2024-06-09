@@ -47,7 +47,10 @@ export default function Tabla({ rows, handleDeleteUser }) {
                           margin: "4px",
                         }}
                       >
-                        BORRAR
+                        <i
+                          className="bi bi-trash-fill"
+                          style={{ fontSize: "16px", color: "white" }}
+                        ></i>
                       </button>
                     </tr>
                   );
