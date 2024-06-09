@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { usuariosServices } from "../services/usuarios.service";
 
 const Filtro = ({ setRows }) => {
+  // traigo las funciones relevantes de useForm, que es nuestro hook de formularios proveniente de la libreria
+  // react-hook-form
   const {
     register,
     handleSubmit,
@@ -11,17 +13,23 @@ const Filtro = ({ setRows }) => {
     setValue,
   } = useForm();
 
+  // funcion que va a enviar los datos del formulario
   const onSubmit = async (data) => {
     console.log(data);
-    setRows(await usuariosServices.getByFilters(data)); // [{}, {}] registros filtrados
+    setRows(await usuariosServices.getByFilters(data)); // invocar el servicio para filtrar los usuarios, una vez
+    // traidos los datos filtrados, los seteo al estado
   };
 
-  const setFields = () => {
-    reset();
-  };
+  // ignorar esto por ahora, no hace nada
+  // const setFields = () => {
+  //   reset();
+  // };
 
   return (
     <div>
+      {/* ese onSubmit={handleSubmit(onSubmit)}, significa que cuando se envien los datos del formulario, 
+      es decir, cuando el tipo pulse ENVIAR, se ejecuta la funcion handleSubmit de la libreria, que llama a la funcion
+      onSubmit que declaramos mas arriba  */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="border p-4 rounded shadow-sm"
@@ -32,6 +40,9 @@ const Filtro = ({ setRows }) => {
           <label htmlFor="name" className="form-label">
             Nombre:
           </label>
+          {/* el register es una funcion que recibe 2 parametros: 
+          1. nombre del campo a registrar
+          2. reglas de validacion personalizadas: cada regla esta compuesta por un valor y un mensaje personalizado */}
           <input
             id="name"
             type="text"
@@ -46,6 +57,8 @@ const Filtro = ({ setRows }) => {
             })}
             className="form-control"
           />
+          {/* si el campo nombre tiene un error, se muestra un mensaje de error, ese error se da cuando el usuario
+          no cumple alguna validacion al enviar el formulario */}
           {errors.nombre && (
             <p className="text-danger">{errors.nombre.message}</p>
           )}
@@ -97,7 +110,7 @@ const Filtro = ({ setRows }) => {
         <button
           type="button"
           className="btn btn-secondary mx-4"
-          onClick={setFields}
+          // onClick={setFields}
         >
           Resetear
         </button>
