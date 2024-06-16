@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Tabla({ rows, handleDeleteUser }) {
+  const navigate = useNavigate();
+
   return (
     <>
       {!rows.error ? (
@@ -38,20 +41,36 @@ export default function Tabla({ rows, handleDeleteUser }) {
                       <td>{user.usuario}</td>
                       <td>{user.email}</td>
                       <td>{user.fecha_alta}</td>
-                      <button
-                        onClick={async () => await handleDeleteUser(user.id)}
-                        className="btn btn-danger"
-                        style={{
-                          backgroundColor: "#8B0000",
-                          border: "none",
-                          margin: "4px",
-                        }}
-                      >
-                        <i
-                          className="bi bi-trash-fill"
-                          style={{ fontSize: "16px", color: "white" }}
-                        ></i>
-                      </button>
+                      <td>
+                        <button
+                          onClick={() => navigate(`/actualizar/${user.id}`)}
+                          className="btn btn-success"
+                          style={{
+                            backgroundColor: "#006400",
+                            border: "none",
+                            margin: "4px",
+                          }}
+                        >
+                          <i
+                            className="bi bi-pencil-fill"
+                            style={{ fontSize: "16px", color: "white" }}
+                          ></i>
+                        </button>
+                        <button
+                          onClick={async () => await handleDeleteUser(user.id)}
+                          className="btn btn-danger"
+                          style={{
+                            backgroundColor: "#8B0000",
+                            border: "none",
+                            margin: "4px",
+                          }}
+                        >
+                          <i
+                            className="bi bi-trash-fill"
+                            style={{ fontSize: "16px", color: "white" }}
+                          ></i>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
